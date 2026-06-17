@@ -1,1 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>festival timetable</title>
+<style>
+  :root{
+    --ink:#16140f;
+    --paper:#f3efe4;
+    --paper2:#ece6d6;
+    --line:#cdc6b2;
+    --spot:#e1452b;        /* riso red spot colour */
+    --muted:#7a7363;
+    --hour:46px;           /* width of one hour on the time axis */
+    --rowpad:6px;
+    --labelw:132px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+
+  header.masthead{border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+  .kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin-bottom:6px}
+  h1{font-size:clamp(34px,7vw,60px);line-height:.92;margin:0;font-weight:800;
+    letter-spacing:-.02em;text-transform:lowercase}
+  h1 .tilde{color:var(--spot)}
+  .sub{margin-top:10px;font-size:13px;color:var(--muted);max-width:60ch;line-height:1.5}
+
+  /* day tabs */
+  .days{display:flex;flex-wrap:wrap;gap:0;margin:18px 0 4px;border:1px solid var(--ink)}
+  .day{flex:1 1 auto;min-width:84px;border:none;border-right:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);font:inherit;font-weight:700;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:11px 6px;
+    cursor:pointer;transition:background .12s}
+  .day:last-child{border-right:none}
+  .day:hover{background:var(--paper2)}
+  .day[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .day .dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--spot);margin-left:5px;vertical-align:middle;opacity:0}
+  .day[aria-pressed="true"] .dot{opacity:1}
+
+  .daymeta{display:flex;justify-content:space-between;align-items:baseline;
+    margin:14px 2px 8px;font-size:12px;color:var(--muted)}
+  .daymeta b{color:var(--ink);text-transform:lowercase;font-size:13px}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin:6px 2px 16px;font-size:11px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px;text-transform:lowercase}
+  .legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+
+  /* grid */
+  .scroller{overflow-x:auto;border:1px solid var(--ink);background:var(--paper);
+    scrollbar-width:thin}
+  .grid{position:relative;min-width:max-content}
+
+  .axis{display:flex;position:sticky;top:0;z-index:14;background:var(--paper2);
+    border-bottom:2px solid var(--ink)}
+  .axis .corner{flex:0 0 var(--labelw);position:sticky;left:0;z-index:16;
+    background:var(--ink);color:var(--paper);font-size:10px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;
+    padding:0 12px;border-right:2px solid var(--ink)}
+  .ticks{position:relative;height:34px;flex:0 0 auto}
+  .tick{position:absolute;top:0;height:34px;border-left:1px solid var(--line);
+    font-size:10px;color:var(--muted);padding:4px 0 0 4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tick.midnight{border-left:2px solid var(--ink)}
+  .tick.midnight b{color:var(--spot)}
+
+  .row{display:flex;border-bottom:1px solid var(--line);position:relative}
+  .row:last-child{border-bottom:none}
+  .rowlabel{flex:0 0 var(--labelw);position:sticky;left:0;z-index:12;
+    background:var(--paper);border-right:2px solid var(--ink);
+    padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+  .rowlabel .nm{font-weight:800;font-size:14px;text-transform:lowercase;letter-spacing:-.01em}
+  .rowlabel .ty{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+  .rowlabel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rowc)}
+
+  .lane{position:relative;flex:0 0 auto;--grid:92px;background:
+      repeating-linear-gradient(90deg,transparent 0,transparent calc(var(--grid) - 1px),
+      var(--line) calc(var(--grid) - 1px),var(--line) var(--grid))}
+  .midline{position:absolute;top:0;bottom:0;width:0;border-left:2px solid #d8cdb0;z-index:0}
+
+  .ev{position:absolute;border-radius:4px;padding:5px 7px;overflow:hidden;
+    background:var(--rowc);color:#fff;cursor:pointer;z-index:1;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);transition:transform .08s,box-shadow .08s}
+  .ev:hover{transform:translateY(-1px);box-shadow:0 3px 9px rgba(0,0,0,.22),inset 0 0 0 1px rgba(0,0,0,.18);z-index:4}
+  .ev .t{font-size:9px;font-weight:700;opacity:.9;font-variant-numeric:tabular-nums;line-height:1.1}
+  .ev .n{font-size:11.5px;font-weight:700;line-height:1.12;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ev .a{font-size:10px;line-height:1.15;opacity:.92;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ev.tall .n{white-space:normal}
+  .ev.femme{box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+  .ev.live::after{content:"●live";position:absolute;top:3px;right:5px;font-size:7.5px;opacity:.8;letter-spacing:.04em}
+  .ev.open{-webkit-mask-image:linear-gradient(90deg,#000 78%,transparent);
+    mask-image:linear-gradient(90deg,#000 78%,transparent)}
+
+  .pausa{background:repeating-linear-gradient(45deg,
+      rgba(0,0,0,.05) 0 6px,rgba(0,0,0,.10) 6px 12px)!important;
+    color:var(--muted)!important;box-shadow:inset 0 0 0 1px var(--line)!important}
+  .pausa .n{font-style:italic;font-weight:600}
+
+  .ongoing{margin-top:22px;border:1px dashed var(--ink);padding:16px 18px;background:var(--paper2)}
+  .ongoing h3{margin:0 0 8px;font-size:13px;text-transform:lowercase;letter-spacing:.02em}
+  .ongoing p{margin:0;font-size:12px;color:var(--muted);line-height:1.55}
+  .ongoing b{color:var(--ink)}
+
+  footer{margin-top:30px;font-size:11px;color:var(--muted);line-height:1.6;
+    border-top:1px solid var(--line);padding-top:12px}
+  .hint{font-size:11px;color:var(--muted);margin:0 2px 10px}
+  @media (max-width:560px){
+    :root{--hour:40px;--labelw:104px}
+    .rowlabel .nm{font-size:12px}
+  }
+  .tick.dayname{border-left:2px solid var(--ink)}
+  .tick.dayname b{color:var(--ink);text-transform:lowercase;font-weight:800;font-size:11px;letter-spacing:-.01em}
+
+  .nowline{position:absolute;width:0;border-left:2px solid var(--spot);z-index:6;pointer-events:none;
+    box-shadow:0 0 5px rgba(225,69,43,.5)}
+  .nowchip{position:absolute;top:0;left:0;transform:translateX(-50%);background:var(--spot);color:#fff;
+    font-size:9px;font-weight:800;letter-spacing:.05em;padding:2px 6px;border-radius:0 0 5px 5px;
+    white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* detail modal */
+  .modal-back{position:fixed;inset:0;background:rgba(22,20,15,.55);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.open{display:flex;animation:fade .12s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--paper);border:2px solid var(--ink);max-width:430px;width:100%;
+    position:relative;box-shadow:9px 9px 0 rgba(22,20,15,.16);animation:pop .14s ease}
+  @keyframes pop{from{transform:translateY(8px) scale(.98)}to{transform:none}}
+  .modal .bar{height:9px;background:var(--mc,#000)}
+  .modal .body{padding:20px 22px 22px}
+  .modal .vn{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .modal .vn b{color:var(--mc,#000)}
+  .modal .when{font-size:13px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  .modal .when small{color:var(--spot);font-weight:700;margin-left:6px}
+  .modal h2{font-size:23px;line-height:1.08;margin:11px 0 0;font-weight:800;letter-spacing:-.01em;text-transform:none}
+  .modal .act{font-size:14px;color:var(--ink);margin-top:7px;line-height:1.45}
+  .modal .act:empty{display:none}
+  .modal .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:15px}
+  .modal .tag{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    border:1px solid var(--ink);padding:3px 8px;border-radius:999px}
+  .modal .tag.live{background:var(--ink);color:var(--paper)}
+  .modal .close{position:absolute;top:6px;right:9px;border:none;background:none;font-size:26px;
+    line-height:1;cursor:pointer;color:var(--ink);padding:2px 6px}
+  .modal .close:hover{color:var(--spot)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="kicker">programme · stages &amp; activities</div>
+    <h1>festival timetable<span class="tilde">.</span></h1>
+    <div class="sub">Every line is a place; time runs left&nbsp;→&nbsp;right. Late sets continue past
+      midnight into the small hours of the next morning. Pick a day below. The club stages
+      (floresta, outro lado, praia) run more or less around the clock — <i>a pausa</i> marks the daily rest.</div>
+  </header>
+
+  <div class="days" id="days" role="tablist" aria-label="Festival day"></div>
+  <div class="daymeta"><span>showing&nbsp; <b id="dayName">—</b></span><span id="dayRange"></span></div>
+
+  <div class="legend" id="legend"></div>
+  <p class="hint">Scroll sideways for the small hours · hover a block for detail · the <b style="color:var(--spot)">red line</b> is now — it tracks your local clock by weekday, so on single-day tabs it only appears on today.</p>
+
+  <div class="scroller" id="scroller">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="ongoing">
+    <h3>ongoing all week — no fixed set times</h3>
+    <p>
+      <b>creative camps</b> — thematic <i>bairros</i> dotted around the campsite (a mesa, cloud 9 on 7 heaven,
+      costura armada, cramp camp, cubko's lab, daydream assembly, draw for your life, dusty dusk, eden cinema,
+      entre mãos, gratitude cleanse, ham-nafas animation, huritao, improv mojo dojo, loom room, moon shack,
+      nave del sonido, parallel truths, pieces chess club, samara pod, tarot craft lab, tarot sanctuary,
+      tinctorium plant lab, tranquilo toss, waky's vault, weaving worlds, whimsical theatre). Drop in whenever
+      they're open. <b>Venga Bingo</b> is the one fixed camp slot — <b>Tuesday only</b>.
+      &nbsp;·&nbsp; <b>art installations</b> &amp; <b>casa marmelada</b> — open across the festival; the booklet
+      lists no scheduled times for these, so find them on site.
+    </p>
+  </div>
+
+  <footer>
+    Built from the festival booklet (pp. 11–54). Club-stage line-ups are noted as
+    <i>“due to reasons, lineup changes may occur.”</i> Times after 24:00 on the axis = the following morning.
+    &nbsp;★/●live = live performance.
+  </footer>
+</div>
+
+<div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="m_title">
+  <div class="modal">
+    <div class="bar"></div>
+    <button class="close" id="m_close" aria-label="Close details">×</button>
+    <div class="body">
+      <div class="vn" id="m_vn"></div>
+      <div class="when" id="m_when"></div>
+      <h2 id="m_title"></h2>
+      <div class="act" id="m_act"></div>
+      <div class="tags" id="m_tags"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- venue definitions ---------- */
+const VENUES = [
+  {id:"cochilo",   name:"cochilo",    type:"live stage",   color:"#e1452b"},
+  {id:"floresta",  name:"floresta",   type:"club · djs",   color:"#1f9d6b"},
+  {id:"outrolado", name:"outro lado", type:"club · djs",   color:"#6a5acd"},
+  {id:"praia",     name:"praia",      type:"club · djs",   color:"#2b8fce"},
+  {id:"apuro",     name:"apuro",      type:"performance",  color:"#cf3f78"},
+  {id:"moonscreen",name:"moonscreen", type:"cinema · av",  color:"#586a86"},
+  {id:"suna",      name:"suna",       type:"sensuality",   color:"#b23a2e"},
+  {id:"tudobem",   name:"tudo bem?",  type:"wellness",     color:"#c79114"},
+];
+const DAYS = ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday","Monday"];
+const NEXT = {Tuesday:"Wed",Wednesday:"Thu",Thursday:"Fri",Friday:"Sat",Saturday:"Sun",Sunday:"Mon",Monday:"Tue"};
+
+/* ---------- event data ----------
+   times are decimal hours; values >=24 mean "next morning".
+   flags: live, femme (femmes-tipi parallel track), pausa, open, st (start-time only) */
+function E(v,d,s,e,n,a,f){return Object.assign({v,d,s,e,n,a:a||""},f||{});}
+const EV = [
+/* ===== COCHILO (live stage) ===== */
+E("cochilo","Wednesday",21,21.75,"Otto Landsberg & Shin Hyo Jin","afro-cubano chekerés × Korean gong"),
+E("cochilo","Wednesday",22,23,"Mohammad Reza Mortazavi","tombak & daf"),
+E("cochilo","Wednesday",23.5,24.25,"Nídia & Valentina Magaletti","syncopated drums, marimba"),
+E("cochilo","Wednesday",24.75,25.5,"Nkisi","'music for magic'"),
+E("cochilo","Wednesday",26,26.75,"HHY & The Kampala Unit","brass × mutant electronics"),
+E("cochilo","Thursday",12,13,"Força Maior","two men, one saxophone"),
+E("cochilo","Thursday",16.17,17,"Charlemagne Palestine, Ambarchi & O'Sullivan","'KKAARREENNIINNAA'"),
+E("cochilo","Thursday",19,20,"Holy Tongue","spiritual dub-dance"),
+E("cochilo","Thursday",22.5,23.5,"Niño de Elche","flamenco's beautiful heretic"),
+E("cochilo","Thursday",25,26,"Takkak Takkak","DJ Scotch Egg × Raja Kirik"),
+E("cochilo","Friday",12,14,"Djrum","exploratory improvised live set"),
+E("cochilo","Friday",15,16,"Samuel Rohrer & Eivind Aarset","hazy, nocturnal"),
+E("cochilo","Friday",18,18.75,"Heith & Tarawangsawelas present Duori","jaipong-born friendship"),
+E("cochilo","Friday",21,22.25,"Michelle Gurevich","poetry meets music"),
+E("cochilo","Friday",23.5,26,"Lip Sync 4 your Waking Life","the sequel ;)"),
+E("cochilo","Saturday",12,13,"Lula Pena","one guitar — Lisbon's quiet earthquake"),
+E("cochilo","Saturday",16,17,"Bonga","icon of Angolan music"),
+E("cochilo","Saturday",18,19,"John McEntire & Sam Prekop","post-rock skeleton, new skin"),
+E("cochilo","Saturday",20.5,22,"O Ghettão","afro-deep-house, kuduro, povera jazz"),
+E("cochilo","Saturday",25,26,"Joshua Serafin & Mario Barrantes Espinoza w/ Fake Moss","fractured divinities"),
+E("cochilo","Sunday",12,13,"Kitty Daisy & Lewis","luau-ska-rockabilly-R&B chaos"),
+E("cochilo","Sunday",15,16.25,"Asmaa Hamzaoui & Bnat Timbouktou","gnawa as living memory"),
+E("cochilo","Sunday",17.5,18.5,"Pedrinho Xalé","cape verdean soul, funaná"),
+E("cochilo","Sunday",20.5,21.5,"Ata Kak","ghanaian vocal acrobatics"),
+E("cochilo","Sunday",24,25.25,"Decius","'the greatest bandcamp review we ever read'"),
+E("cochilo","Monday",7,10,"e/tape","soft edges as the sun comes up"),
+E("cochilo","Monday",10,12,"Alexi Perälä","ambient drone, astral vibrations"),
+E("cochilo","Monday",13,14,"Shahzad Ismaily","heartstring plucker"),
+E("cochilo","Monday",15,16,"Devon Rexi","krautrock motorik flirts with dub"),
+E("cochilo","Monday",17.5,18.5,"Sonic Interventions","the revolution, jazzified"),
+E("cochilo","Monday",21,21.83,"Robert Aiki Audrey Lowe","modular synths as paint",{live:1}),
+E("cochilo","Monday",22,22.92,"Colleen presents Libres Antes del Final","moog matriarch ripples"),
+
+/* ===== FLORESTA (club) ===== */
+E("floresta","Wednesday",21,21.75,"Carmen Villain","",{live:1}),
+E("floresta","Wednesday",21.75,25,"Yentl."),
+E("floresta","Wednesday",25,28,"Magda & Mike Servito"),
+E("floresta","Wednesday",28,31,"Tina"),
+E("floresta","Wednesday",31,34,"mad miran"),
+E("floresta","Thursday",10,14,"a pausa","",{pausa:1}),
+E("floresta","Thursday",14,17,"Dj Trystero"),
+E("floresta","Thursday",17,20,"Vlada"),
+E("floresta","Thursday",20,23,"CCL"),
+E("floresta","Thursday",23,26,"VIL"),
+E("floresta","Thursday",26,28,"69db presents Wave Arising","",{live:1}),
+E("floresta","Thursday",28,31,"Haruka"),
+E("floresta","Thursday",31,34,"Konduku"),
+E("floresta","Friday",10,14,"a pausa","",{pausa:1}),
+E("floresta","Friday",14,17,"Nathalie Seres"),
+E("floresta","Friday",17,23,"Rhadoo"),
+E("floresta","Friday",23,27,"Tiago"),
+E("floresta","Friday",27,31,"Koodoo & Lamaz"),
+E("floresta","Friday",31,34,"Paquita Gordon"),
+E("floresta","Saturday",10,14,"a pausa","",{pausa:1}),
+E("floresta","Saturday",14,17,"Dana Kuehr"),
+E("floresta","Saturday",17,20,"Serginho"),
+E("floresta","Saturday",20,24,"Prosumer"),
+E("floresta","Saturday",24,28,"BASHKKA"),
+E("floresta","Saturday",28,31,"Amelia Holt"),
+E("floresta","Saturday",31,34,"DVDE"),
+E("floresta","Sunday",10,14,"a pausa","",{pausa:1}),
+E("floresta","Sunday",14,15,"Katatonic Silentio","",{live:1}),
+E("floresta","Sunday",15,17.5,"Valody"),
+E("floresta","Sunday",17.5,20,"2JACK4U","",{live:1}),
+E("floresta","Sunday",20,21.5,"Carrier & Gavsborg","",{live:1}),
+E("floresta","Sunday",21.5,25,"Dasha Rush"),
+E("floresta","Sunday",25,26.5,"Polar Inertia","",{live:1}),
+E("floresta","Sunday",26.5,30,"Rene Wise"),
+E("floresta","Sunday",30,33,"rRoxymore"),
+E("floresta","Monday",9,13,"Kia & Richard Akingbehin"),
+E("floresta","Monday",13,16,"Kuba'97"),
+E("floresta","Monday",16,19,"Djrum","",{open:1}),
+
+/* ===== OUTRO LADO (club) ===== */
+E("outrolado","Thursday",12,16,"Edward","",{live:1}),
+E("outrolado","Thursday",16,19,"Alton Miller"),
+E("outrolado","Thursday",19,22,"Yamour"),
+E("outrolado","Thursday",22,25,"XDB & Lowtec"),
+E("outrolado","Thursday",25,28,"Michael J Blood"),
+E("outrolado","Thursday",28,31,"Flo Masse"),
+E("outrolado","Thursday",31,34,"Elli"),
+E("outrolado","Friday",10,11.5,"Drama"),
+E("outrolado","Friday",11.5,14,"Coco María"),
+E("outrolado","Friday",14,16,"Millie McKee"),
+E("outrolado","Friday",16,18,"Pedro Tenreiro"),
+E("outrolado","Friday",18,19,"I:Cube","",{live:1}),
+E("outrolado","Friday",19,22,"Matthias Reiling"),
+E("outrolado","Friday",22,25,"Keith Worthy"),
+E("outrolado","Friday",25,28,"Cosmo"),
+E("outrolado","Friday",28,31,"Cassy"),
+E("outrolado","Friday",31,34,"Leafar Legov","",{live:1}),
+E("outrolado","Saturday",10,11,"Margaux Gazur","",{live:1}),
+E("outrolado","Saturday",11,12,"Alexandre Centeio","",{live:1}),
+E("outrolado","Saturday",12,13,"Birds & Tapes","",{live:1}),
+E("outrolado","Saturday",13,14,"Ani Zakareishvili","",{live:1}),
+E("outrolado","Saturday",14,15,"Lerosa","",{live:1}),
+E("outrolado","Saturday",15,18,"Billi"),
+E("outrolado","Saturday",18,20,"Aleksi Perälä","",{live:1}),
+E("outrolado","Saturday",20,22,"Parallel 9"),
+E("outrolado","Saturday",22,26,"Edward & Konstantin"),
+E("outrolado","Saturday",26,28,"Tobias.","",{live:1}),
+E("outrolado","Saturday",28,30,"Serenne"),
+E("outrolado","Saturday",30,34,"SnPLO"),
+E("outrolado","Sunday",10,11,"Jan Jelinek","",{live:1}),
+E("outrolado","Sunday",11,12,"Sam Prekop","",{live:1}),
+E("outrolado","Sunday",12,14,"Lina"),
+E("outrolado","Sunday",14,16,"Tau Car"),
+E("outrolado","Sunday",16,18,"Andrés Zacco"),
+E("outrolado","Sunday",18,20,"Jichael Mackson","",{live:1}),
+E("outrolado","Sunday",20,21,"Lawrence & Thomas Melchior","",{live:1}),
+E("outrolado","Sunday",21,24,"Ulf Eriksson"),
+E("outrolado","Sunday",24,25,"Eduardo de la Calle","",{live:1}),
+E("outrolado","Sunday",25,29,"Jane Fitz"),
+E("outrolado","Sunday",29,33,"Vera · DJ Dustin · Mimi · Vuur · …","closing rotation",{open:1}),
+
+/* ===== PRAIA (club) ===== */
+E("praia","Wednesday",21,22,"Tristan Arp","",{live:1}),
+E("praia","Wednesday",22,25,"Party Smith"),
+E("praia","Wednesday",25,28,"Dj Marcelle"),
+E("praia","Wednesday",28,30,"Kiss Nuka","",{live:1}),
+E("praia","Thursday",6,12,"a pausa","",{pausa:1}),
+E("praia","Thursday",12,13,"Om Unit Acid Dub Studies","",{live:1}),
+E("praia","Thursday",13,16,"elemental"),
+E("praia","Thursday",16,19,"protodub"),
+E("praia","Thursday",19,23,"Marylou"),
+E("praia","Thursday",23,26,"Mia Koden"),
+E("praia","Thursday",26,28,"Mala"),
+E("praia","Thursday",28,30,"Mix'Elle"),
+E("praia","Friday",6,12,"a pausa","",{pausa:1}),
+E("praia","Friday",12,14,"o ghettão","",{live:1}),
+E("praia","Friday",14,17,"Dj Caring"),
+E("praia","Friday",17,20,"Nightmares on Wax"),
+E("praia","Friday",20,23,"Ojoo"),
+E("praia","Friday",23,24,"Dj Godfather","",{live:1}),
+E("praia","Friday",24,25,"NikNak","",{live:1}),
+E("praia","Friday",25,30,"Nosedrip"),
+E("praia","Saturday",6,12,"a pausa","",{pausa:1}),
+E("praia","Saturday",12,16,"Hugo Sanchez"),
+E("praia","Saturday",16,18,"Alan Braxe"),
+E("praia","Saturday",18,21,"Arrogance Arrogance"),
+E("praia","Saturday",21,24,"Natalia Escobar"),
+E("praia","Saturday",24,25,"Shackleton","",{live:1}),
+E("praia","Saturday",25,27,"Olgica"),
+E("praia","Saturday",27,30,"Upsammy x Gyrofield"),
+E("praia","Sunday",6,14,"a pausa","",{pausa:1}),
+E("praia","Sunday",14,16,"Selecta Fontes"),
+E("praia","Sunday",16,18,"Vixen Sound"),
+E("praia","Sunday",18,20,"Simply Rockers Sound System"),
+E("praia","Sunday",20,22,"Vedic Roots"),
+E("praia","Sunday",22,24,"Lion's Den"),
+E("praia","Sunday",24,26,"Simply Rockers Sound System"),
+
+/* ===== APURO (performance / workshops) ===== */
+E("apuro","Wednesday",19.5,21,"The Funeral of the Normal","Asquito Eso & Lawunda Richardson"),
+E("apuro","Thursday",10,11.5,"Fluid Stretch & Kardio with a K","Geri & IvankaXpress"),
+E("apuro","Thursday",12,13.5,"Permission to Perform","António Graça & Old Baby"),
+E("apuro","Thursday",14,15.5,"A Dark Room with a View","Suna (s)crew"),
+E("apuro","Thursday",19,20.5,"Contested Territories","Vasquez & Brandhi"),
+E("apuro","Thursday",21.5,22.5,"A Gift to Ikoro","Collectivo Afrontosas"),
+E("apuro","Thursday",23.5,25,"LOVAGE","Foundling & Rêyzen"),
+E("apuro","Friday",10,11,"From Ball Culture to Catwalk","Fuego 007 & Felicia"),
+E("apuro","Friday",12,13.5,"Banana Rage","Mario Barrantes Espinoza"),
+E("apuro","Friday",14,15.5,"The Erotics of Destruction","Sepideh khodarahmi"),
+E("apuro","Friday",17.5,19,"Above the Raveyard","become the bass"),
+E("apuro","Friday",21,22.5,"Under the Lake","Kluster Collective"),
+E("apuro","Friday",22.5,24,"SubMissa","REZMORAH and Mahfoud"),
+E("apuro","Friday",26,33,"A Sonic Séance","infinity rug & guests"),
+E("apuro","Saturday",10,11.5,"Trancebreath","Greiderer & Jenkin"),
+E("apuro","Saturday",13,14.5,"Needle as Nectar","Naoun, Salandin, Fabbretti"),
+E("apuro","Saturday",15,16.5,"Elemental group massage","em~amir"),
+E("apuro","Saturday",17,18.5,"Let's Talk About Sex Work","Azizz, Marquez, Sanchez"),
+E("apuro","Saturday",20,24,"Roots in Resonance — South Asian Diaspora","Majja x Masala Movement"),
+E("apuro","Saturday",24.5,25.5,"Shibari x Gong","Julim Rosa & Marcos Mangani"),
+E("apuro","Sunday",12,13.5,"Performing with Pride ft. Brian the non-binary Lion","Brook Tate"),
+E("apuro","Sunday",13.5,14.5,"Conducted improv","Shahzad Ismaily"),
+E("apuro","Sunday",16.5,18.5,"Communitilting","a sonic love cult"),
+E("apuro","Sunday",21.5,22.5,"Spirit Theatre","Chen Ting & Shahzad Ismaily"),
+E("apuro","Sunday",23.5,24.5,"Raw Life is Beautiful","Onwunali, FES., Malur, Andy"),
+
+/* ===== MOONSCREEN (cinema / av) ===== */
+E("moonscreen","Thursday",22,23,"Once Upon a Moon","a quiet inauguration"),
+E("moonscreen","Thursday",23.25,24.25,"Hazaz Collective: Land unrealities","live score Nicolas Baviere"),
+E("moonscreen","Thursday",24.5,25,"Well Well Well","Horta & Meerwein"),
+E("moonscreen","Thursday",25,26,"Rawy Presents","SWANA cinema shorts"),
+E("moonscreen","Thursday",26,27,"Tiny Man Festival: Experimental Animated Shots",""),
+E("moonscreen","Thursday",27,28,"Mountains That Weep","Aurora Solá"),
+E("moonscreen","Friday",21.5,22,"A Homage to Tiny Companions with Diaskoop","Landcare Club & Diaskoop"),
+E("moonscreen","Friday",22,23.5,"K","Mathieu Erlacher",{live:1}),
+E("moonscreen","Friday",24,25,"Unheld III","Ehteshamzadeh & Koochakzadeh-Yazdi",{live:1}),
+E("moonscreen","Friday",25,26,"Curated by Curtas: Maryam Tafakory","Portuguese shorts"),
+E("moonscreen","Friday",26,28,"Curated by SUNA & Erotic Film Festival Barcelona","sexy shorts & shadowplay"),
+E("moonscreen","Saturday",20,22,"Shcuro & Maria Amor","downtempo dj set"),
+E("moonscreen","Saturday",22,23.5,"Paraíso","Daniel Mota — 90s rave doc"),
+E("moonscreen","Saturday",23.5,24,"Serendipity","Camila Padilha ft. The Sunshine Boys",{live:1}),
+E("moonscreen","Saturday",24,24.25,"Modular Youth","Luisa Lukas",{live:1}),
+E("moonscreen","Saturday",24.25,25.25,"Phase Space: Field","Gwenan & Danimation"),
+E("moonscreen","Saturday",25.25,28,"Who Owns You?","notbinarycode — livecoding jam"),
+E("moonscreen","Sunday",19,22,"486SX","Phrex & Rasco.mov",{live:1}),
+E("moonscreen","Sunday",22,23,"Nomadica","cinema & the natural world"),
+E("moonscreen","Sunday",23,24.5,"In Dreams","luminous short films"),
+E("moonscreen","Sunday",24.67,25.17,"Resonance","Gizem Öz & Lova Ranung",{live:1}),
+E("moonscreen","Sunday",25.33,26,"Morada Aberta: Onde o Gesto Cura","Tânia Dinis — closing"),
+
+/* ===== SUNA (sensuality) — femme = *Femmes Tipi parallel track ===== */
+E("suna","Thursday",17,18.5,"Shiatsu & Ayurveda massage","Sara"),
+E("suna","Thursday",19,20.5,"Why so serious?","Rezmorah"),
+E("suna","Thursday",21,25,"How to threesome","Sonja & Ale"),
+E("suna","Thursday",21,23,"Queer Collective Sociodrama","Manuela · *Femmes Tipi",{femme:1}),
+E("suna","Friday",16,17.5,"DIY Porn","Felipe"),
+E("suna","Friday",18,19.5,"FISTING: A practical workshop","Carmo"),
+E("suna","Friday",20,24,"Fantasy Mixer (queer play party)","Em"),
+E("suna","Friday",20,22,"Ask a Hoe","Sabrina · *Femmes Tipi",{femme:1}),
+E("suna","Friday",26,28,"Moonsuna","w/ Moonscreen — EFF Barcelona"),
+E("suna","Saturday",16,17.5,"Whipping & Worship","Goddess Eileen & Slave Rui"),
+E("suna","Saturday",18,19.5,"Eco BDSM: Your Femmasc Power","Aria & Annalisa"),
+E("suna","Saturday",20,24,"Ipponawa (BDSM play party)","Miranda, Himawari, Sad.ropes…"),
+E("suna","Saturday",20,22,"Pleasure Activism 101","*Femmes Tipi",{femme:1}),
+E("suna","Saturday",26,28,"The Rabbit and the Magic Man","bondage, joy, brute force"),
+E("suna","Sunday",16,17.5,"Foraging pleasure","Gigi & Mari"),
+E("suna","Sunday",18,19.5,"Get Nakie!","Rodrigo"),
+E("suna","Sunday",20,24,"Collective Erotic Play","Jairo & Julia"),
+E("suna","Sunday",20,22,"Who let the girls out","Didi & Teresa · *Femmes Tipi",{femme:1}),
+
+/* ===== TUDO BEM? (wellness) — start-time sessions, ~90 min ===== */
+E("tudobem","Tuesday",16,17.5,"The Thread Throughout","Yulfri & Anna",{st:1}),
+E("tudobem","Tuesday",16,17.5,"Knocking on the Door of Tomorrow","Filipa",{st:1}),
+E("tudobem","Tuesday",18,19.5,"Bow to the Wow","Tudo Bem",{st:1}),
+E("tudobem","Tuesday",20,21.5,"Invisible Knots","Julim & Marcos",{st:1}),
+E("tudobem","Wednesday",9,10.5,"The Great Cosmic Guffaw","Charlie",{st:1}),
+E("tudobem","Wednesday",11,12.5,"Somatised","Ollie",{st:1}),
+E("tudobem","Wednesday",13,14.5,"Alone Together","Anna Eva",{st:1}),
+E("tudobem","Wednesday",15,16.5,"Quantum Boogie","Saida",{st:1}),
+E("tudobem","Wednesday",17,18.5,"The Creature We Are","Arturo & Julia",{st:1}),
+E("tudobem","Thursday",9,10.5,"Space Between Things…","Victoria",{st:1}),
+E("tudobem","Thursday",11,12.5,"Rest as Resistance","Sangeeta",{st:1}),
+E("tudobem","Thursday",13,14.5,"Oxygen & Other Miracles","Dima",{st:1}),
+E("tudobem","Thursday",15,16.5,"A Gentle Grapple","Oryx",{st:1}),
+E("tudobem","Thursday",17,18.5,"Physical Linguistics","Phoenix",{st:1}),
+E("tudobem","Thursday",19,20.5,"Tango Without Panic","Diego",{st:1}),
+E("tudobem","Thursday",21,22.5,"Listening Beneath the Skin","Raghdan",{st:1}),
+E("tudobem","Friday",9,10.5,"A False Idea of Control","Victoria",{st:1}),
+E("tudobem","Friday",11,12.5,"Crystal Clear","Sophie",{st:1}),
+E("tudobem","Friday",13,14.5,"Living Sculpture","Oryx",{st:1}),
+E("tudobem","Friday",15,16.5,"Astro Drama","Daniel",{st:1}),
+E("tudobem","Friday",17,18.5,"Wave Arising","Seb & Kynsie",{st:1}),
+E("tudobem","Friday",19,20.5,"Enter the Ronda","Diego",{st:1}),
+E("tudobem","Friday",21,22.5,"Vibrations & Other Invisible Friends","Ceci & Julim",{st:1}),
+E("tudobem","Saturday",9,10.5,"A Quiet Place for Quiet People","Anna Eva",{st:1}),
+E("tudobem","Saturday",11,12.5,"Silent Signals","Ollie",{st:1}),
+E("tudobem","Saturday",13,14.5,"Astro Descent","Daniel",{st:1}),
+E("tudobem","Saturday",15,16.5,"Silence Moves Us","Robyn",{st:1}),
+E("tudobem","Saturday",17,18.5,"Primordial Vibration","Sophie",{st:1}),
+E("tudobem","Saturday",19,20.5,"The Non-fearful Body","Phoenix",{st:1}),
+E("tudobem","Saturday",21,22,"Summer Songstice","Danilo & Fifi",{st:1}),
+E("tudobem","Saturday",22,23,"What Emerges Between Us","Raghdan",{st:1}),
+E("tudobem","Saturday",23,24,"Bathing in 40 Hz","Asa",{st:1}),
+E("tudobem","Sunday",7,8.5,"El Cuento","ECHO ECHO",{st:1}),
+E("tudobem","Sunday",9,10.5,"Body as Receiver","Robyn",{st:1}),
+E("tudobem","Sunday",11,12.5,"Gentle Reassembly","Saida",{st:1}),
+E("tudobem","Sunday",13,14.5,"Low Frequency Surrender","Asa & Dima",{st:1}),
+E("tudobem","Sunday",15,16.5,"Soft Cell","Charlie",{st:1}),
+E("tudobem","Sunday",17,18.5,"Tudo Bem, Tudo Bom","Danilo & Fifi",{st:1}),
+];
+
+/* ---------- helpers ---------- */
+const HOUR = ()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour'));
+function clock(h){let hh=((Math.floor(h)%24)+24)%24,mm=Math.round((h-Math.floor(h))*60);
+  if(mm===60){hh=(hh+1)%24;mm=0;}return String(hh).padStart(2,'0')+":"+String(mm).padStart(2,'0');}
+
+/* assign overlapping events in a venue-row to stacked sub-lanes */
+function packLanes(items){
+  const sorted=[...items].sort((a,b)=>a.s-b.s||a.e-b.e);
+  const lanes=[]; // each = last end time
+  sorted.forEach(it=>{
+    let placed=false;
+    for(let i=0;i<lanes.length;i++){ if(it.s>=lanes[i]-1e-6){it.lane=i;lanes[i]=it.e;placed=true;break;} }
+    if(!placed){it.lane=lanes.length;lanes.push(it.e);}
+  });
+  return {items:sorted,lanes:lanes.length};
+}
+
+/* ---------- state & tabs ---------- */
+const OFFSET={Tuesday:0,Wednesday:24,Thursday:48,Friday:72,Saturday:96,Sunday:120,Monday:144};
+const JS2DAY={0:"Sunday",1:"Monday",2:"Tuesday",3:"Wednesday",4:"Thursday",5:"Friday",6:"Saturday"};
+let current="All";
+let viewState=null;
+const grid=document.getElementById('grid');
+const scroller=document.getElementById('scroller');
+const daysBar=document.getElementById('days');
+
+["All",...DAYS].forEach(d=>{
+  const b=document.createElement('button');
+  b.className='day';b.type='button';b.setAttribute('role','tab');
+  b.innerHTML=(d==="All"?"all days":d)+'<span class="dot"></span>';
+  b.setAttribute('aria-pressed',String(d===current));
+  b.onclick=()=>{current=d;[...daysBar.children].forEach(c=>c.setAttribute('aria-pressed',String(c===b)));render(true);};
+  daysBar.appendChild(b);
+});
+
+/* legend */
+const legend=document.getElementById('legend');
+VENUES.forEach(v=>{const s=document.createElement('span');
+  s.innerHTML=`<i style="background:${v.color}"></i>${v.name}`;legend.appendChild(s);});
+const pz=document.createElement('span');
+pz.innerHTML=`<i style="background:repeating-linear-gradient(45deg,#bbb 0 4px,#ddd 4px 8px)"></i><i style="display:none"></i><em>a pausa = stage rest</em>`;
+legend.appendChild(pz);
+const nz=document.createElement('span');
+nz.innerHTML=`<i style="background:var(--spot)"></i><em>now — your local time</em>`;
+legend.appendChild(nz);
+
+function render(autoScroll){
+  const isAll = current==="All";
+  const HW = isAll ? (window.innerWidth<560?15:24) : HOUR();
+  let evs;
+  if(isAll){
+    evs = EV.map(e=>Object.assign({},e,{s:OFFSET[e.d]+e.s,e:OFFSET[e.d]+e.e}));
+    document.getElementById('dayName').textContent="all days · tue → mon";
+  }else{
+    evs = EV.filter(e=>e.d===current).map(e=>Object.assign({},e));
+    document.getElementById('dayName').textContent=current.toLowerCase();
+  }
+
+  // window bounds
+  let min=Infinity,max=-Infinity;
+  evs.forEach(e=>{min=Math.min(min,e.s);max=Math.max(max,e.e);});
+  if(!isFinite(min)){min=12;max=24;}
+  min=Math.floor(min); max=Math.ceil(max);
+  const laneW=(max-min)*HW;
+  const step= isAll?6:2;
+
+  document.getElementById('dayRange').textContent= isAll
+    ? "full festival timeline →"
+    : clock(min)+" → "+clock(max)+(max>=24?"  ("+NEXT[current]+" morning)":"");
+
+  grid.innerHTML="";
+
+  /* axis */
+  const axis=document.createElement('div');axis.className='axis';
+  const corner=document.createElement('div');corner.className='corner';corner.textContent='place / time';
+  axis.appendChild(corner);
+  const ticks=document.createElement('div');ticks.className='ticks';ticks.style.width=laneW+'px';
+  if(isAll){ // label the first (partial) day too
+    const t0=document.createElement('div');t0.className='tick dayname';t0.style.left='0px';
+    t0.innerHTML=`<b>${DAYS[Math.floor(min/24)]}</b>`;ticks.appendChild(t0);
+  }
+  for(let h=Math.ceil(min/step)*step; h<=max; h+=step){
+    const t=document.createElement('div');
+    const isMid=(((h%24)+24)%24)===0;
+    t.className='tick'+(isMid?' midnight':'');
+    t.style.left=((h-min)*HW)+'px';
+    if(isAll){
+      if(isMid){t.classList.remove('midnight');t.classList.add('dayname');
+        t.innerHTML=`<b>${DAYS[Math.round(h/24)]||""}</b>`;}
+      else t.innerHTML=clock(h);
+    }else{
+      t.innerHTML=isMid?`<b>${clock(h)}</b><br>${NEXT[current]}`:clock(h);
+    }
+    ticks.appendChild(t);
+  }
+  axis.appendChild(ticks);grid.appendChild(axis);
+
+  /* rows */
+  VENUES.forEach(v=>{
+    const items=evs.filter(e=>e.v===v.id);
+    const row=document.createElement('div');row.className='row';row.style.setProperty('--rowc',v.color);
+
+    const label=document.createElement('div');label.className='rowlabel';
+    label.innerHTML=`<span class="nm">${v.name}</span><span class="ty">${v.type}</span>`;
+    row.appendChild(label);
+
+    const lane=document.createElement('div');lane.className='lane';lane.style.width=laneW+'px';
+    lane.style.setProperty('--grid',(step*HW)+'px');
+
+    // midnight / day dividers
+    for(let h=Math.ceil(min/24)*24; h<=max; h+=24){const ml=document.createElement('div');
+      ml.className='midline';ml.style.left=((h-min)*HW)+'px';lane.appendChild(ml);}
+
+    const {items:packed,lanes}=packLanes(items);
+    const laneH=Math.max(54,lanes*40+10);
+    lane.style.height=laneH+'px';
+    const subH=(laneH-8)/lanes;
+
+    packed.forEach(it=>{
+      const el=document.createElement('div');
+      let cls='ev';
+      if(it.pausa)cls+=' pausa';
+      if(it.live)cls+=' live';
+      if(it.femme)cls+=' femme';
+      if(it.open)cls+=' open';
+      const w=(it.e-it.s)*HW;
+      if(!isAll&&subH>=42&&w>120)cls+=' tall';
+      el.className=cls;
+      el.style.left=((it.s-min)*HW)+'px';
+      el.style.width=Math.max(w-3,14)+'px';
+      el.style.top=(4+it.lane*subH)+'px';
+      el.style.height=(subH-4)+'px';
+      const tlabel=it.st?clock(it.s):clock(it.s)+"–"+clock(it.e);
+      el.innerHTML=(isAll?'':`<div class="t">${tlabel}</div>`)+`<div class="n">${it.n}</div>`+
+                   ((!isAll&&it.a)?`<div class="a">${it.a}</div>`:'');
+      el.title=`${it.n}${it.a?' — '+it.a:''}\n${tlabel} · ${v.name}${isAll?' · '+it.d:''}`;
+      el.tabIndex=0; el.setAttribute('role','button');
+      el.addEventListener('click',()=>openDetail(it,v,isAll));
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDetail(it,v,isAll);}});
+      lane.appendChild(el);
+    });
+
+    row.appendChild(lane);grid.appendChild(row);
+  });
+
+  /* now-line overlay */
+  const labelw=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--labelw'));
+  const nl=document.createElement('div');nl.id='nowline';nl.className='nowline';
+  nl.innerHTML='<span class="nowchip">now</span>';
+  grid.appendChild(nl);
+  const axisH=axis.offsetHeight;
+  nl.style.top=axisH+'px';
+  nl.style.height=(grid.scrollHeight-axisH)+'px';
+
+  viewState={min,max,hw:HW,isAll,labelw};
+  placeNow();
+
+  if(autoScroll){
+    const c=nowCoord();
+    scroller.scrollLeft = (c!=null) ? Math.max(0,(c-min)*HW - scroller.clientWidth*0.30) : 0;
+  }
+}
+
+/* ---------- live "now" marker ---------- */
+function nowCoord(){
+  if(!viewState) return null;
+  const d=new Date();
+  const today=JS2DAY[d.getDay()];
+  const h=d.getHours()+d.getMinutes()/60;
+  if(viewState.isAll){ const a=OFFSET[today]+h; return (a>=viewState.min&&a<=viewState.max)?a:null; }
+  const D=current;
+  if(today===D && h>=viewState.min && h<=viewState.max) return h;          // daytime of this day
+  const nd=DAYS[(DAYS.indexOf(D)+1)%DAYS.length];                          // its overnight spill
+  if(today===nd){ const a=h+24; if(a>=viewState.min && a<=viewState.max) return a; }
+  return null;
+}
+function placeNow(){
+  const nl=document.getElementById('nowline'); if(!nl||!viewState) return;
+  const c=nowCoord();
+  if(c==null){ nl.style.display='none'; return; }
+  nl.style.display='block';
+  nl.style.left=(viewState.labelw+(c-viewState.min)*viewState.hw)+'px';
+  const d=new Date();
+  nl.querySelector('.nowchip').textContent='now '+clock(d.getHours()+d.getMinutes()/60);
+}
+
+/* ---------- detail modal ---------- */
+function openDetail(it,v,isAll){
+  const os = isAll ? it.s-OFFSET[it.d] : it.s;
+  const oe = isAll ? it.e-OFFSET[it.d] : it.e;
+  const m=document.getElementById('modalBack');
+  m.style.setProperty('--mc',v.color);
+  document.getElementById('m_vn').innerHTML=`<b>${v.name}</b> &nbsp;·&nbsp; ${v.type}`;
+  const when = it.st ? ('starts '+clock(os)) : (clock(os)+' – '+clock(oe));
+  const xnight = (os>=24||oe>24) ? '<small>after midnight</small>' : '';
+  document.getElementById('m_when').innerHTML=it.d+' &nbsp;·&nbsp; '+when+xnight;
+  document.getElementById('m_title').textContent=it.n;
+  document.getElementById('m_act').textContent=it.a||'';
+  const tags=document.getElementById('m_tags');tags.innerHTML='';
+  const add=(t,c)=>{const s=document.createElement('span');s.className='tag'+(c?' '+c:'');s.textContent=t;tags.appendChild(s);};
+  if(it.live)add('live performance','live');
+  if(it.femme)add('femmes tipi');
+  if(it.pausa)add('stage rest');
+  if(it.open)add('open-ended');
+  if(it.st)add('drop-in session');
+  m.classList.add('open');
+  document.getElementById('m_close').focus();
+}
+function closeDetail(){document.getElementById('modalBack').classList.remove('open');}
+document.getElementById('m_close').addEventListener('click',closeDetail);
+document.getElementById('modalBack').addEventListener('click',e=>{if(e.target.id==='modalBack')closeDetail();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
+
+render(true);
+setInterval(placeNow,30000);
+window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(()=>render(false),150);});
+</script>
+</body>
+</html>
 
