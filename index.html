@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>festival timetable</title>
+<title>Waking life slay-booklé digité</title>
 <style>
   :root{
     --ink:#16140f;
@@ -150,13 +150,28 @@
   .modal .close{position:absolute;top:6px;right:9px;border:none;background:none;font-size:26px;
     line-height:1;cursor:pointer;color:var(--ink);padding:2px 6px}
   .modal .close:hover{color:var(--spot)}
+  .share{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;
+    margin:26px auto 4px;padding:18px 20px;border:2px solid var(--ink);max-width:480px;
+    background:var(--paper2);box-shadow:6px 6px 0 rgba(22,20,15,.14)}
+  .share .qr{width:148px;height:148px;border:6px solid #fff;background:#fff;image-rendering:pixelated;flex:0 0 auto}
+  .share .sharetxt p{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+  .share .sharetxt .strange{margin-top:8px;font-weight:800;font-size:16px;letter-spacing:-.01em;line-height:1.25}
+  .disclaimer{border:1px dashed var(--spot);background:rgba(225,69,43,.06);color:var(--ink);
+    padding:9px 12px;margin:0 0 12px;border-radius:4px;font-size:11.5px;line-height:1.55}
+  .disclaimer b{color:var(--spot)}
+  .counter{text-align:center;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);padding:14px 0 24px;font-variant-numeric:tabular-nums}
+  .counter #vcount{color:var(--ink);font-weight:700}
+  .modal .body{max-height:84vh;overflow:auto}
+  .modal .desc{white-space:pre-line;font-size:13.5px;line-height:1.6;color:#2c2820;margin-top:13px}
+  .modal .desc:empty{display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="masthead">
     <div class="kicker">programme · stages &amp; activities</div>
-    <h1>festival timetable<span class="tilde">.</span></h1>
+    <h1 style="text-transform:none">Waking life slay-booklé digité<span class="tilde">.</span></h1>
     <div class="sub">Every line is a place; time runs left&nbsp;→&nbsp;right. Late sets continue past
       midnight into the small hours of the next morning. Pick a day below. The club stages
       (floresta, outro lado, praia) run more or less around the clock — <i>a pausa</i> marks the daily rest.</div>
@@ -186,12 +201,25 @@
     </p>
   </div>
 
+  <div class="share">
+    <img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsAQAAAABRBrPYAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAABzklEQVR4nO1aUW4rMQgcqncvuFm0N4MbtSegH2CzeXGq/LTrVkykWLZGWnYE9thecryAj7dXWEDTmta0pv1pmhEREQkAmBhJtjW6/StcQ2N3d4WJCUxYTU6jF8e2Nc2IBGBlBbva7SCZo1fHtj/NiIQPotshnIn2/Q/9AzRWPoRd7aY/99DfSfsXDTtgMGEYgd0EomP0sth2pqHmfrDe/3LU3d93foXrdJtQAGNm49N46/aAmW+sCLGyHWnXui2RurErK7ty9JQVYEXr9gyjQkOkMHAeCmandVvBq1BTP/bybpGBrdsjQjaOP50VypVsrdsKM8mmULkYaMrXui0RSnmkmbtiTHTlS1q3Bcr3xp4+JQxfwlHCrdsjyu/OmQ2sQ7Ce355h1GkVafanp2vdVqh1IY3uqM5hgVu3JWa+1ba+9l2Re63bAqnbyLnhQKb17Xxb4+445OR3dW63WrdntPPNFUxYAROYwChPfrd/hZ+mzTrNDEOeiuS6qu17v6TFzZWR8HE7SEzOl1kXx/YLaFwOTgHU2cgGsW1NY4UJYBI2GHF3v0dsW9Hu5rdaS+fRL7d/W6P29eNQXOcWX8ftTOv2P6i/Qmxa05rWtBfwCQbvDLHsYvEVAAAAAElFTkSuQmCC" alt="QR code to share this booklet" width="148" height="148">
+    <div class="sharetxt">
+      <p>Share with others via this QR code.</p>
+      <p class="strange">The portal is open.<br>Turn and face the strange.</p>
+    </div>
+  </div>
+
   <footer>
+    <p class="disclaimer"><b>Disclaimer:</b> This is an unofficial, fan-made digitisation of the printed booklet.
+    It is <b>not hosted, run, or endorsed by the festival organizers</b>, and it may contain mistakes,
+    typos, or out-of-date times. Always check the official programme on site.</p>
     Built from the festival booklet (pp. 11–54). Club-stage line-ups are noted as
     <i>“due to reasons, lineup changes may occur.”</i> Times after 24:00 on the axis = the following morning.
     &nbsp;★/●live = live performance.
   </footer>
 </div>
+
+<div class="counter">visitors: <span id="vcount">1003</span></div>
 
 <div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="m_title">
   <div class="modal">
@@ -202,6 +230,7 @@
       <div class="when" id="m_when"></div>
       <h2 id="m_title"></h2>
       <div class="act" id="m_act"></div>
+      <p class="desc" id="m_desc"></p>
       <div class="tags" id="m_tags"></div>
     </div>
   </div>
@@ -678,6 +707,184 @@ function placeNow(){
   nl.querySelector('.nowchip').textContent='now '+clock(d.getHours()+d.getMinutes()/60);
 }
 
+/* ---------- full booklet descriptions (venueId|name) ---------- */
+const DESC={
+"cochilo|Otto Landsberg & Shin Hyo Jin":`Afro-cubano chekerés amplifying the sounds of Cuban resilience. The jing: a deep Korean gong swallowing silence like an egg eating snake.`,
+"cochilo|Mohammad Reza Mortazavi":`His fingers don't play the tombak and daf, they whisper to them, argue with them, bring to life unmapped cartographies. A metronome that dreams.`,
+"cochilo|Nídia & Valentina Magaletti":`Syncopated drums, marimba lines, warm synths. Dance music with pools of personality, swagger and soul.`,
+"cochilo|Nkisi":`'Music for Magic' ain't no metaphor, but a living technology for transformation. It's an insurgency against agreed-upon reality. Rhythms that rupture the mass hypnosis. Perceptual trapdoors swinging open.`,
+"cochilo|HHY & The Kampala Unit":`Brass voltage. Mutant Electronics. Deep soundsystem pressure. Steam. Served Kampala hot. Tastes like nothing you've ever heard.`,
+"cochilo|Força Maior":`Two men. A 400-year-old Portuguese farm where revolution was once plotted. Out came not gunpowder but a saxophone stitched into a tapestry both delicate & intense.`,
+"cochilo|Charlemagne Palestine, Ambarchi & O'Sullivan":`One of the founders of the NYC school of minimalism music reimagines his 1997 meditative performance 'Karenina'. Colourful consonance swelling until you can't tell where the room ends and your bloodstream begins.`,
+"cochilo|Holy Tongue":`Psychedelic, free-form, high energy, spiritual dub-dance music.`,
+"cochilo|Niño de Elche":`Flamenco's beautiful heretic. For twenty years he's been unpicking flamenco's seams, rewiring its soul.`,
+"cochilo|Takkak Takkak":`DJ Scotch Egg meets Raja Kirik in a collision named after the sound of a wooden fish being struck. Industrial. Joyful. Completely unclassifiable. The name says it all and nothing, you'll have to feel it for yourself.`,
+"cochilo|Djrum":`An exploratory improvised live set featuring bespoke instruments made here by the lake.`,
+"cochilo|Samuel Rohrer & Eivind Aarset":`Drums that listen. Guitar that shape-shifts into vapour. Hazy, nocturnal, wandering like a half-remembered dream.`,
+"cochilo|Heith & Tarawangsawelas present Duori":`Born in jaipong clubs at 2am, cigarettes dying in ashtrays, someone muttering about ghosts. A friendship stretched across twelve time zones. The distance itself became the music.`,
+"cochilo|Michelle Gurevich":`When poetry meets music in a smokey bar; melancholic, dramatic, and strangely comforting at the same time.`,
+"cochilo|Lip Sync 4 your Waking Life":`The sequel. If you were there last year, you know what madness to expect. If you weren't.. well.. you kinda had to have been there.. ;) FYI, this is also your moment to shine. Yeah you :)`,
+"cochilo|Lula Pena":`One guitar. A single thread tugging you through fado's exquisite grief, flamenco's gut-punch, bossa nova's tenderness. A poet who sings and a singer who poems. Lisbon's quiet earthquake.`,
+"cochilo|Bonga":`Icon of Angolan music.`,
+"cochilo|John McEntire & Sam Prekop":`Thirty years defining post-rock's skeleton. Tonight they shed skin. Rhythm-driven electronica and modular pieces so precise they make you want to dance and meditate simultaneously. Sit still. Move. Both at once.`,
+"cochilo|O Ghettão":`Ever heard polyrhythmic afro-deep-house, kuduro and minimal povera jazz all in one place? Well Lisbon based DJ Nigga Fox, DJ Danifox and DJ Firmeza are gonna bring it.`,
+"cochilo|Joshua Serafin & Mario Barrantes Espinoza w/ Fake Moss":`Fractured Divinities meets Relics meets Maxhete. Exactly.`,
+"cochilo|Kitty Daisy & Lewis":`Siblings serving luau guitar-ska-rockabilly-R&B chaos.`,
+"cochilo|Asmaa Hamzaoui & Bnat Timbouktou":`Southern Moroccan desert. Gnawa as living memory. Stories of slavery, migration, spiritual endurance carried in a woman's voice that could crack stone. Desert blues meets trance-state invocation.`,
+"cochilo|Pedrinho Xalé":`Arrived in Lisbon at 18 with Santiago Island lodged in his marrow. Turned longing luminous. Synthesizers bent to Cape Verdean soul. Reggae and funaná tangled into something no shoreline can contain.`,
+"cochilo|Ata Kak":`Ghanaian vocal acrobatics. Syllable-bender. Smile-generator since '94. Discovered on Awesome Tapes from Africa. Sounds like surfing on pure sunshine.`,
+"cochilo|Decius":`"This so fucking tough. On first listen, I got that feeling you get when you've been driving through the pitch black desert, finally hearing the bass echoing in the distance, and you make a big turn which may actually just be a cliff, but instead ends at a rave with people going off, lasers beaming between the dunes, and you know you're in for a wild night." — the greatest bandcamp review we ever read.`,
+"cochilo|e/tape":`Sound researcher. Deep thinker. Local fixture. Colours his worlds lush, ethereal, diffused. Soft edges to hold onto as the sun comes up.`,
+"cochilo|Alexi Perälä":`Ambient drone from astral vibrations.`,
+"cochilo|Shahzad Ismaily":`Multi-instrumentalist. Heartstring plucker. If this doesn't leave you tender, check your pulse.`,
+"cochilo|Devon Rexi":`Krautrock motorik flirts with dub gravity. Songs arrive like transmissions from the furthest wormhole, quantum, fantastical, but their real terrain is earthly: vulnerability, friction, the small mythologies of survival.`,
+"cochilo|Sonic Interventions":`The revolution, jazzified. Diasporic-futuristic-transcultural big bang. Music. Spoken word. Movement. Prepare to tremble.`,
+"cochilo|Robert Aiki Audrey Lowe":`Brooklyn alchemist. Space as canvas. Modular synths as paint. Timbres so rich they require their own postal code. Longform pieces that build cathedrals in your cochlea.`,
+"cochilo|Colleen presents Libres Antes del Final":`Bubble. Pulse. Ripple along with the frequencies of the Moog Matriarch. Go deep. Remember to surface for air. You might forget.`,
+
+"apuro|The Funeral of the Normal":`We spit on the ashes of "should." A participatory un-becoming, composting the expected, resurrecting the shadow underneath sterile reality. Bring something to kill and something to grow.`,
+"apuro|Fluid Stretch & Kardio with a K":`The festivities never stop, nor does our movement, so let's ride it & flow among stretching poses, slowing down into the crucial spots that help us sur-rave-ive the week. Then we aerobic with it for a deep, manic sweat. #ThisIsNotYoga`,
+"apuro|Permission to Perform":`We've buried spontaneity under curated punchlines. A workshop in un-polishing, cancel performativity culture, embrace the stumble, the crack and the glorious fail.`,
+"apuro|A Dark Room with a View":`Tired of the same old pornographic tropes of sex dungeons and hook-up spots? Curious to curate a different kind of erotic space? Then schnap into our darkroom discourse circle and whet your appetite.`,
+"apuro|Contested Territories":`UK Garage was born to entertain soldiers. We trace the militarist-club nexus through Ayia Napa's haunted Cypriot psychogeography. A live improvised reckoning with bass and empire.`,
+"apuro|A Gift to Ikoro":`The great tree watches thresholds. Yoruba time-sorcery meets the dissident-transhuman body. A ritual of poetic contagion, you will most definitely not stay the same shape afterward.`,
+"apuro|LOVAGE":`Witches Were Right. A collective conjuring of the unseen forces we possess. A sonic bed invoking the powers and wisdom of the roots running across the veil of the seen and unseen. Vibrations that resonate from the depths and live in all our bones.`,
+"apuro|From Ball Culture to Catwalk":`Category is: dance or die. Face, European Runway, Old Way Vogue, Femme. Ballroom as queer survival technology. Learn moves, grab attention, thrive in self-love and the warm, sassy hug of community.`,
+"apuro|Banana Rage":`"by the banana plantations??? you won't make it back!" A performative excavation of plantation history, extractive destruction, and the banana as a memory-charged object. Maxhete's presence says: rage is myth, rage is force, rage is the dancefloor.
+
+*Maxhete will be presented Saturday at Cochilo as part of Fractured Divinities.`,
+"apuro|The Erotics of Destruction":`Smash. Crush. Eat. Ruin. Transform. A performance-workshop where objects become sacrilege, and composting becomes kink. What lives at the edge of the ruins? You.`,
+"apuro|Above the Raveyard":`Harness the pulse. Become the bass. Become the gospel. (The rest is a secret the grave won't keep.) The commodification of the rave will not stand. Group thoughts on the dancefloor industrial complex.`,
+"apuro|Under the Lake":`A gremlin-nymph rises through frequencies and mist. Not human, not myth, just pure, delightful weird. Descend with us, shed some heaviness, resurface a little more tender and porous.`,
+"apuro|SubMissa":`A DEBAUCHEROUS SPELL. Progressive music, effective words, metaphysical realness. Audience invited to move choreographically. sstillnnessabused. The frequency of EVERYthing. The elemental PEOPLECY ++++humOUR essential.`,
+"apuro|A Sonic Séance":`A durational sonic séance of deep frequencies, strings, chants, herbal potions, and an altar for the departed. Mourning as collective resonance. Rest among ghosts. Dawn comes tender. Come lay with us.`,
+"apuro|Trancebreath":`In-tense. Out-tense. Sus-tense. Psychedelic breathwork to transcend, rewire, and return replenished. Breathe like you mean it.`,
+"apuro|Needle as Nectar":`Pain into pleasure. Vulnerability, trust, consent. Permanent marks from a still-shaping angle. Tattoo as collective transformation.`,
+"apuro|Elemental group massage":`Touch your friends. Touch like a river. Touch like a rock. Gift them fire, blow on them like wind. A collaborative touch-gift ecology opens.`,
+"apuro|Let's Talk About Sex Work":`When intimacy meets currency, what do we learn about ourselves? No judgment. Just real talk from those who know. Come into the circle.`,
+"apuro|Roots in Resonance — South Asian Diaspora":`A welcome ceremony. Decolonising yoga over childhood snacks. Tracing queer histories. Bharatnatyam & Kuchipudi dance performance. How our migrant backgrounds shape the way we show up in the world and tinge our artistic expressions in electronic music.`,
+"apuro|Shibari x Gong":`Tension. Limits. Release. Rope and resonance in the space-in-between. Witness what's possible when edges become portals and the skin the primary organ of sense-making.`,
+"apuro|Performing with Pride ft. Brian the non-binary Lion":`A musical theatre werkshop focusing on queer expression, character embodiment and finding power in voice. Part storytelling, part vocal technique and full on musical-theatre-showtime.. roar :)`,
+"apuro|Conducted improv":`Butch Morris gesture based conduction tradition. Enter sonic improv with your full cellves. No net. No fear. Just game.`,
+"apuro|Communitilting":`Strangers become waves. Touch = gospel. Sound = glue. A sonic love cult. Dive in or drift away. The flow is giving aliveness. Not a performance but a melthood, ooze in?`,
+"apuro|Spirit Theatre":`An interactive telepathic performance where the boundaries between minds dissolve. Through sound, ritual, and immersive magic, a portal to the invisible realm opens. Dark secrets are revealed. Unspoken questions find their answers. Personal messages are channeled from the unseen.`,
+"apuro|Raw Life is Beautiful":`Poetry with a live band. A sensory reckoning. No polish. No filter. Just beautiful, bleeding raw life.`,
+
+"moonscreen|Once Upon a Moon":`A quiet inauguration; revealing, unveiling. We invite weary and curious bodies into our amphitheater of denim and dust. Let the first images of the weekend wash over you. Some things are better discovered than described. Schnap into it!`,
+"moonscreen|Hazaz Collective: Land unrealities":`Drawing on archival and everyday footage – often shaped by a colonial gaze – three films reclaim and reimagine perceptions of Palestine through experimental image-making that blurs documentary and fiction.
+
+UNDR by Kamal Al Jafaari
+The flowers stand silently witnessing by Theo Panagopoulos
+Home Movies Gaza by Basma Al Shari`,
+"moonscreen|Well Well Well":`A camera tethered to a 100-meter cord descends into a single well – continuously, spiraling, without arrival. Inspired by early phantom ride films of the late 19th century, this work redirects cinema's oldest illusion of motion downward into geological and psychic depths. Stone becomes echo. Engineering becomes oracle.`,
+"moonscreen|Rawy Presents":`A Berlin-based collective of filmmakers and cinephiles dedicated to independent SWANA (Southwest Asia & North Africa) cinema. Through pop-up screenings worldwide, they scout raw talents and untold stories – bridging cultures, preserving heritage and amplifying voices that deserve a bigger screen.
+
+White Winged Horse by Mahyar Mandegar
+Sultana's Reign by Hadi Moussally
+Ship of Fools by Alia Haju`,
+"moonscreen|Tiny Man Festival: Experimental Animated Shots":`Tiny Man, the interplanetary creature of extraordinary dimensions, returns to Earth for another round of terrestrial displays of stories being told. A yearly challenge, we ask for creatives of all shapes to tell their best tales based on a theme. Short and animated, this is an anthology of trips, Trips and TRIPS from around the world, done exclusively for the Tiny Man.`,
+"moonscreen|Mountains That Weep":`Three black mountains blink down on aeons of human doing and undoing, while a geologist and an indigenous poet search the Amazonian landscape for clues from which to reconstruct a fast vanishing past.`,
+"moonscreen|A Homage to Tiny Companions with Diaskoop":`These small compositions were made earlier at the Landcare Club. Join us for an appreciation of seed fluffs & flower petals to discover more about the land, or just because they're beautiful!`,
+"moonscreen|K":`K is a solo that explores the body as a field of forces in transformation. In dialogue with space and environment, sound, light, and movement intertwine to create an intense and immersive WOW. A performance that e x p a n d s perception.`,
+"moonscreen|Unheld III":`This evening offers two works by Iranian women – each finding their own language for displacement, memory and what the body carries across borders.
+
+Unheld III explores tender moments of disassociation in female bodies – a requiem for displacement, holding fragments of home while embracing an identity that can only emerge at a distance. Through improvised yet carefully mapped performance, Kimia's wearable Alloy Resonator transforms her body into instrument & Saghi's intimate archive of haptic encounters with flora and female tenderness builds a world between dislocation and connection.`,
+"moonscreen|Curated by Curtas: Maryam Tafakory":`Maryam Tafakory layers poetry, archival fragments and speculative nonfiction into films that move through historical gaps and unspoken rules. Her practice traces quiet acts of erasure – upon bodies, intimacies, histories – giving space to concealed queer stories and what is too often dismissed as excessive or trivial.
+
+Nazarbazi
+Razeh-Del
+Daria's Night Flower`,
+"moonscreen|Curated by SUNA & Erotic Film Festival Barcelona":`Erotic Film Festival Barcelona and Suna present a juicy selection of films that explore desire, bodies and sexuality with nuance: playful, political, intimate, challenging. The night then climaxes in a participatory performance streamed live to the big screen straight from across the road in Suna.`,
+"moonscreen|Shcuro & Maria Amor":`Founders of decade-old Lisbon label Paraíso and producers of the eponymous documentary. Their DJ set pays homage to the chillout rooms of 90s raves – downtempo, low BPM, unhurried..`,
+"moonscreen|Paraíso":`In the early 90s, Portugal ignited its own dance music explosion – wild raves birthing a sound uniquely its own. Through exclusive footage and interviews with DJs, producers, dancers and promoters, this documentary traces the rise of Portuguese rave culture and its lasting echo in electronic music worldwide.`,
+"moonscreen|Serendipity":`Two clubber friends, separated by time and space, meet again by chance on a dancefloor in the future. What unites them? The same "hot track" that rocked their last party together. Logidy is treating us with a live version of his soundtrack in collaboration with his studio companion Flo. Aka, The Sunshine Boys.`,
+"moonscreen|Modular Youth":`Scenographer Luisa Lukas weaves digitised home videos from 1998–2004 into a live audiovisual meditation on the fragility of early childhood. Through datamoshing, pixel distortion and layering, images dissolve as memories do - into fragments and emotional traces. Sound and image unite, built intuitively, collapsing into silence. Each iteration is unique, specially reworked for Moonscreen.`,
+"moonscreen|Phase Space: Field":`Episodic memories are distilled into sense impressions. Where last year's Drift was pre-recorded, introspective, rising from a nighttime stillness into a din at dawn, Field is live, connected, beginning in the commotion of a daylight gathering & landing us softly back where we started: a quiet lake shore at night.`,
+"moonscreen|Who Owns You?":`Globally, data is kept captive. Here, unshackled, it flows between machine, coders, and audience. Human-typed code generates art. No AI. Livecoding jam: we show our screens; you interpret the creation process. Visual and sonic landscapes, ephemeral and improvised through custom software. Breaking loops and looping breaks – notbinarycode strikes again.`,
+"moonscreen|486SX":`Where sonic memories from a distant past reverberate in dreams of an obscure postcapitalist future drowned in sedatives.`,
+"moonscreen|Nomadica":`Born on the slopes of Etna, untethered from any geography. Nomadica curates screenings, events and workshops at the crossroads of experimental arts. They explore the uncertain relationship between cinema's optical eye and the ever-changing natural world – a journey between forest floor and incandescent sky.
+
+Discoveries on the Forest Floor by Charlotte Pryce
+LANDFILL 16 by Jennifer Reeves
+Through the Lens by Cécile Fontaine
+Under the Volcano by Colectivo Los Ingrávidos
+The Astronomer's Dream by Julie Murray
+Luminous Variations in the City Skies by Giuseppe Spina
+Sun Song by Joseph Bernard`,
+"moonscreen|In Dreams":`As our journey nears its end, drop into these dreamlike short films. Luminous works that create a gentle space for processing the week's ride.
+
+Subtle Matter Fluid Hands by Maika Garnica
+Joon by Marian Aliabadi
+Earth Body I by Arran Gregory
+Top View of My Brain as a Crime Scene by Luzia Johow
+The Cast by Leon Billerbeck
+Gáthra by Camilla Dubhe and White Houston
+A shell of (for) you by Julia Chetwood
+UM)bigo by Sofia Santa-Rita
+Sunset Special by Nicolas Gebbe
+Baile do Sol by Miguel Tavares`,
+"moonscreen|Resonance":`Sound unfolds as pure material: vibration, decay, interference. Visually, a drifting ecosystem of particles, spores and abstracted organic forms. Image and sound remain in deliberate tension, sustaining an atmosphere that refuses to resolve.`,
+"moonscreen|Morada Aberta: Onde o Gesto Cura":`Three interconnected moments, unfolding across languages, spaces and temporalities. Drawing from personal memory and the landscapes of North Portugal, Alto Minho and Galiza, this expanded cinema work follows working women - guardians of ancestral knowledge tied to land, sea and natural cycles. Between documentary and fiction, it traces the invisible gestures that sustain communities and keep sacred knowledge alive.`,
+
+"suna|Shiatsu & Ayurveda massage":`An experiment in listening, observing and renegotiating through touch.`,
+"suna|Why so serious?":`A performance of rebellion, pleasure, and power. Bondage, dominance, joy, tenderness and a touch of brute force. Transmasc-coded, it casts the cystem into oblivion. Pursuing mutual destruction and pleasure while paying homage to dyke and faggot ancestries. Worshipping the body over capitalism, only to desecrate it. No sacred spaces, no virtue. The body is a spell, a weapon, a Molotov cocktail of sweat, spit, cum and defiance.`,
+"suna|How to threesome":`Did you ever have a threesome that didn't go so well? Are you dreaming of having a threesome? Or are you a professional threesomer and want to play?`,
+"suna|Queer Collective Sociodrama":`A safe container to process. For anyone affected by patriarchy.`,
+"suna|DIY Porn":`Felipe Andrat is a Brazilian filmmaker and image-maker based in Lisbon, porn enthusiast, open exhibitionist, and lover of collective mischief.`,
+"suna|FISTING: A practical workshop":`This workshop is both practical and expansive. We'll cover preparation, technique and aftercare — the how. But we'll also hold space for the why: What lineage are we part of when we do this? What are we invoking when we go this deep?`,
+"suna|Fantasy Mixer (queer play party)":`A space to connect with fantasies (your own and others'), express them anonymously, and make some of them come true. ~ to support us in transitioning to an open play space.`,
+"suna|Ask a Hoe":`Everything you were always too afraid to ask a sexworker.`,
+"suna|Moonsuna":`Erotic Film Festival Barcelona and Suna present a juicy selection of films that explore desire, bodies and sexuality with nuance: playful, political, intimate, challenging. The night then climaxes in a participatory performance streamed live to the big screen straight from across the road in Suna.`,
+"suna|Whipping & Worship":`A brief intro on the use of impact toys (whips, paddles, crops and canes) and a discussion on the psychic and spiritual aspects of dominance and submission. There will be lots of toys available and ample time for free play.`,
+"suna|Eco BDSM: Your Femmasc Power":`A somatic investigation into the power power structures that fragment the experience of pleasure. Through the lenses of Eco-Sex and Eco-Porn, we aim to dismantle the hierarchical binaries of "Man/Woman" and "Culture/Nature."`,
+"suna|Ipponawa (BDSM play party)":`A shibari workshop where, through the use of a single rope, you can explore the connection with your own body and with another person. Discover how one rope can become a bridge for playful interaction and trust.`,
+"suna|Pleasure Activism 101":`From Educational to Somatic sensual exploration of the power of pleasure and Self pleasure.`,
+"suna|The Rabbit and the Magic Man":`Bondage, dominance, joy, tenderness and a touch of brute force. A performance of rebellion, pleasure, and power. Transmasc-coded, it casts the cystem into oblivion. Pursuing mutual destruction and pleasure while paying homage to dyke and faggot ancestries. Worshipping the body over capitalism, only to desecrate it. No sacred spaces, no virtue. The body is a spell, a weapon, a Molotov cocktail of sweat, spit, cum and defiance.`,
+"suna|Foraging pleasure":`An ecosexuality workshop that explores pleasure and softness as a way of reconnecting the body with the non-human world through consent-based sensorial practices.`,
+"suna|Get Nakie!":`What is the potential of baring the skin?`,
+"suna|Collective Erotic Play":`A consent-centered journey where NO becomes grounding, desire becomes dialogue, and touch unfolds as conscious, collective co-creation.`,
+"suna|Who let the girls out":`Ourselves, darling. connect with what turns you on in a warm, sensuous, gurl to grrl steam room. leave appeasement at the door, come feel pleasure from below. For femme & trans folkx only.`,
+
+"tudobem|The Thread Throughout":`A landing, of sorts, though arrival is always a bit of a fiction. We come in carrying what we're carrying, and we put some of it down. Integration before, during, and after. Welcome home.`,
+"tudobem|Knocking on the Door of Tomorrow":`Before the festival fully wakes, we knock. A small greeting to the land that's about to hold us, to let the air rearrange itself around us. The door is already open, we are guests here.`,
+"tudobem|Bow to the Wow":`Bow to the wow, bow to the brainbox, bow to the body, bow to whatever brought you here. The wow bows back. The wow is about to unfold. So begins the bowing.`,
+"tudobem|Invisible Knots":`No rope, no restraint, yet somehow you're held. Guided imagery leads the body through tension, surrender, and the delicious edge of the unseen. Bound by nothing, held by imagination.`,
+"tudobem|The Great Cosmic Guffaw":`The cosmic joke slowly reveals itself: you are a sentient piece of stardust trying to remember you are actually the entire galaxy. The universe laughs at itself through you.`,
+"tudobem|Somatised":`Touch is a language older than words. Here, we remember how to speak it.`,
+"tudobem|Alone Together":`Each of us is inside our own little universe. Somehow, this becomes a collective. We arrive as ourselves and begin there alone, together.`,
+"tudobem|Quantum Boogie":`Your body is a galaxy of restless atoms pretending to be still. Shake, swirl, and drift through movement where imagination meets physics. The groove was always microscopic.`,
+"tudobem|The Creature We Are":`A hundred bodies, one strange creature. We start as cells and end as something with paws and instincts. Come as you are and become something else.`,
+"tudobem|Space Between Things…":`Between breath and movement there's a whole universe we rush past. Asana becomes less about arriving and more about what falls between the cracks on the way there.`,
+"tudobem|Rest as Resistance":`A soft no to grind culture. We gather to undo and unravel, to slow down collectively, to remember rest as necessity not luxury, as the kind of refusal that builds the world we actually want to live in.`,
+"tudobem|Oxygen & Other Miracles":`Breath is a small daily miracle. Rhythmic breathing and movement stir the inner fire and send something electric through the system. Turns out simply being alive is pretty electric.`,
+"tudobem|A Gentle Grapple":`Somewhere between dance and jiu-jitsu lies a playful entanglement. A squishy dance fight club, kinda. A soft fight where nobody loses and everybody wins.`,
+"tudobem|Physical Linguistics":`Every body is fluent in something. Most of us were never taught how to read it. Through movement and sound, we expand the vocabulary and let our private languages meet on the floor.`,
+"tudobem|Tango Without Panic":`Tango is just leaning, with style. Into gravity, into rhythm, into another human. Two left feet welcome.`,
+"tudobem|Listening Beneath the Skin":`Even in stillness, the body hums. Explore the subtle landscape beneath the skin until the body feels less like an object and more like a galaxy.`,
+"tudobem|A False Idea of Control":`Habits run deep, deeper than we want to admit, into body and nervous system. We loosen the loop with play, pause, and movement we don't quite recognise. The false idea of control gets a friendly poke.`,
+"tudobem|Crystal Clear":`Movement and stillness, light and shadow, the loud and the quiet. The body holds all of it, and we use breath, mantra, and movement to tune to whichever one we've been avoiding.`,
+"tudobem|Living Sculpture":`The body as sculpture, except it breathes, leaks, and changes its mind. Move through strange shapes, states, and impulses, and let the body show you what it makes when you stop telling it what to do.`,
+"tudobem|Astro Drama":`The sky is not a backdrop, it's a stage and right now the performance is wild. Saturn dismantling, Neptune dissolving, karmic axis shifting, world breaking and blooming at the same time. We read the drama above to understand the trembling below.`,
+"tudobem|Wave Arising":`The body as tide, since the sonic wave is improvised and the room is never twice the same. Qi Gong meets live sound, and the body learns to move at the speed of breath.`,
+"tudobem|Enter the Ronda":`A social tango space for the curious, the shy, and the rhythmically adventurous. Learn the quiet etiquette of the ronda, the cabeceo's silent invitation, and let yourself drift into the orbit of the dance.`,
+"tudobem|Vibrations & Other Invisible Friends":`Lie down and let the unseen do the talking. Gongs, chimes, and pauses ripple through you while your body remembers how to rest. Nothing to do but listen while the invisible rearranges you.`,
+"tudobem|A Quiet Place for Quiet People":`A soft landing for the sensitive and the overstimulated. Move slowly, breathe deeply, and enjoy the relief of not having to say anything at all. Belonging without words.`,
+"tudobem|Silent Signals":`A quiet, playful descent beneath thinking. The body remembers what it knew before language, the child still somewhere in there starts speaking again in sensation, image, and memory.`,
+"tudobem|Astro Descent":`Each layer deeper, each threshold asking you to set something down. Through astrology, trance, and sound, we move beneath the surface of the mind, through the seen forces and the unseen ones, and meet what's already waiting.`,
+"tudobem|Silence Moves Us":`A push and pull between chaos and calm, between sound and stillness, between what the body hears and what it answers with. Silence moves. The body listens. Something subtle begins to speak.`,
+"tudobem|Primordial Vibration":`Before music, before language, there was vibration. The universe clears its throat and we prepare to listen.`,
+"tudobem|The Non-fearful Body":`Sensuality is intrinsic, not learned. Humour is a rebellion against perfectionism. Together they take the neural pathway less traveled, the wild one, the soft one, the one covered in paint. If you can laugh, your body probably feels safe enough to be here.`,
+"tudobem|Summer Songstice":`Worship at the altar of summer in sweet sweet song. Hallelujah, but make it queer.`,
+"tudobem|What Emerges Between Us":`We carry hidden rooms inside us, latent versions of ourselves waiting for someone to hold the key. Something forms in the space between. Not you, not me. Something shared.`,
+"tudobem|Bathing in 40 Hz":`The double bass hums at the edge of hearing. A slow-moving tide of sound. Lie down and float.`,
+"tudobem|El Cuento":`As the sun slowly rises, a story begins to unfold. Voices, rhythm, and imagination drift between dream and daylight. The morning is listening.`,
+"tudobem|Body as Receiver":`Don't kill intelligence, just land it in the body. Low frequencies, subtle shifts, deep listening. Sound moves through you tuning the system from the inside. Less about hearing. More about feeling what's already there.`,
+"tudobem|Gentle Reassembly":`For mornings when the body is heavy and the soul is slightly off-axis. Slowwww movement, breath, and bodywork to oil the joints and put the pieces back together again.`,
+"tudobem|Low Frequency Surrender":`Yin postures slow the body down. Live double bass meets it there, somewhere below language. Surrender is the only verb available.`,
+"tudobem|Soft Cell":`A late-festival session for late-festival bodies. Mantra, movement, contact, and a bit of soul pondering that takes you the rest of the way to the wellspring inside you that never actually had walls to begin with.`,
+"tudobem|Tudo Bem, Tudo Bom":`All's good my heart. The longest day deserves a chorus. Somewhere between devotion and chaos, we sing.`,
+};
+
 /* ---------- detail modal ---------- */
 function openDetail(it,v,isAll){
   const os = isAll ? it.s-OFFSET[it.d] : it.s;
@@ -690,6 +897,8 @@ function openDetail(it,v,isAll){
   document.getElementById('m_when').innerHTML=it.d+' &nbsp;·&nbsp; '+when+xnight;
   document.getElementById('m_title').textContent=it.n;
   document.getElementById('m_act').textContent=it.a||'';
+  const desc=DESC[it.v+'|'+it.n]||'';
+  const dEl=document.getElementById('m_desc');dEl.textContent=desc;dEl.style.display=desc?'block':'none';
   const tags=document.getElementById('m_tags');tags.innerHTML='';
   const add=(t,c)=>{const s=document.createElement('span');s.className='tag'+(c?' '+c:'');s.textContent=t;tags.appendChild(s);};
   if(it.live)add('live performance','live');
@@ -708,7 +917,27 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 render(true);
 setInterval(placeNow,30000);
 window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(()=>render(false),150);});
+
+/* ---------- visitor counter ----------
+   Live count via a free, no-signup, CORS-enabled hit API (CountAPI by Miles Hilliard).
+   Display = BASE + server hits, so the tally starts at 1003 and climbs on every visit.
+   If the API is unreachable (e.g. opened from file:// with no net), it falls back to a
+   per-browser tally so a number always shows. */
+(function(){
+  const BASE=1002;                                  // first recorded visit shows 1003
+  const KEY='waking_life_slay_booklet_digite_2026'; // unique global key for this page
+  const out=document.getElementById('vcount');
+  function runUp(target){
+    const from=Math.max(BASE+1,target-14), t0=performance.now(), dur=1100;
+    (function step(t){const k=Math.min(1,(t-t0)/dur);
+      out.textContent=Math.round(from+(target-from)*(1-Math.pow(1-k,3))).toLocaleString();
+      if(k<1)requestAnimationFrame(step);})(t0);
+  }
+  fetch('https://countapi.mileshilliard.com/api/v1/hit/'+KEY)
+    .then(r=>r.json())
+    .then(d=>{const v=parseInt(d.value,10); runUp(BASE+(isFinite(v)?v:1));})
+    .catch(()=>{ let v=1; try{v=(parseInt(localStorage.getItem(KEY)||'0',10)||0)+1;localStorage.setItem(KEY,String(v));}catch(e){} runUp(BASE+v); });
+})();
 </script>
 </body>
 </html>
-
